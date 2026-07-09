@@ -5,7 +5,7 @@ import time
 from grpc_frame.event_bus import EventBus
 from grpc_frame.grpc_server import create_grpc_server
 
-from power_level_monitor.image_stream_ctrl import ImageStreamDeviceClass
+from image_server.image_stream_ctrl import ImageStreamDeviceClass
 
 
 HOST = "0.0.0.0"
