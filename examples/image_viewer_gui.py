@@ -1,12 +1,12 @@
-"""PyQt5を使用したgRPC画像ビューアー。"""
+"""PySide6を使用したgRPC画像ビューアー。"""
 
 import argparse
 import sys
 import threading
 
-from PyQt5.QtCore import QObject, Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import QObject, Qt, QTimer, Signal
+from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtWidgets import (
     QApplication,
     QHBoxLayout,
     QLabel,
@@ -22,9 +22,9 @@ from image_server.server_grpc import ImageStreamClient
 
 
 class StreamWorker(QObject):
-    frame_received = pyqtSignal(object)
-    error = pyqtSignal(str)
-    finished = pyqtSignal()
+    frame_received = Signal(object)
+    error = Signal(str)
+    finished = Signal()
 
     def __init__(self, client, topic):
         QObject.__init__(self)
@@ -70,7 +70,7 @@ class ImageViewerWindow(QMainWindow):
         self._stop_button = QPushButton("Stop")
         self._status = QLabel("Disconnected")
         self._image = QLabel("No image")
-        self._image.setAlignment(Qt.AlignCenter)
+        self._image.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._image.setMinimumSize(640, 480)
 
         top = QHBoxLayout()
@@ -139,14 +139,14 @@ class ImageViewerWindow(QMainWindow):
             width,
             height,
             channels * width,
-            QImage.Format_RGB888,
+            QImage.Format.Format_RGB888,
         ).copy()
         pixmap = QPixmap.fromImage(image)
         self._image.setPixmap(
             pixmap.scaled(
                 self._image.size(),
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
             )
         )
 
@@ -188,7 +188,7 @@ def main():
         args.topic,
     )
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":
