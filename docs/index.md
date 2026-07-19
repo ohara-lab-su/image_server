@@ -8,7 +8,7 @@
 :caption: Contents:
 
 api/modules
-tutorials/tutorial
+tutorial
 api_docs
 ```
 

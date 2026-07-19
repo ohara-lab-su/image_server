@@ -1,43 +1,54 @@
 # image_server
 
-ローカル画像取得層と `grpc_frame` 公開層を分離した汎用画像サーバーです。
+image_server は「USBカメラを扱うライブラリ」ではありません。
 
-```text
-src/image_server/
-├── __init__.py
-├── image_stream_ctrl.py
-└── server_grpc/
-    ├── __init__.py
-    ├── client.py
-    └── image_stream_grpc_service.py
-```
+本ライブラリは **画像転送機能を既存プログラムへ組み込むためのテンプレート** です。
+OpenCV・gRPC・Viewer を毎回実装するのではなく、画像取得部分だけを書き換えることで
+画像転送システムを短時間で構築できることを目的としています。
 
-`image_stream_ctrl.py` は OpenCV のみに依存し、`grpc_frame` を import しません。
-JPEG変換、EventBus、配信スレッドは `server_grpc` 内だけにあります。
+## このライブラリが解決する問題
 
-## ローカル実行
+通常は次のような処理を毎回実装する必要があります。
 
-```bash
-python examples/local_image_viewer.py
-```
+- カメラ接続
+- フレーム取得
+- JPEG圧縮
+- 通信
+- Viewer
+- 接続管理
+- スレッド管理
 
-## gRPCサーバー
+image_server はこれらを共通化し、利用者は **画像取得部だけ** を実装します。
 
-```bash
-python examples/run_image_server.py --auto-start
-```
+## レイヤ構造
 
-## CLI
+Application
+↓
+ImageStreamGrpcService
+↓
+ImageStreamCtrl
+↓
+Camera SDK
 
-```bash
-python examples/image_client_cli.py status
-python examples/image_client_cli.py show
-```
+ImageStreamCtrl は Camera SDK を抽象化する層です。
+ImageStreamGrpcService は画像配信だけを担当します。
 
-## GUI
+## 開発フロー
 
-Python 3.6対応のため、GUIは PySide6 ではなく PyQt5 を使用します。
+1. ImageStreamCtrl を OpenCV で動かす
+2. SDK に置き換える
+3. run_image_server.py を起動
+4. Viewer で確認
+5. DeviceProxy や AI システムへ組み込む
 
-```bash
-python examples/image_viewer_gui.py
-```
+## 想定用途
+
+- USB Camera
+- Basler
+- IDS
+- HikVision
+- GigE Vision
+- ORiN Camera
+- AI 推論サーバ
+- 外観検査
+- ロボットビジョン
