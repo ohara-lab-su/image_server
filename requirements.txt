@@ -1,0 +1,7 @@
+opencv-python>=4.5,<5
+numpy==1.19.5
+grpcio==1.48.2
+protobuf==3.20.3
+grpc_frame
+x_logger
+PyQt5>=5.15,<6
