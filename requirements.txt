@@ -3,3 +3,8 @@ numpy
 PySide6
 grpcio
 protobuf
+sphinx
+sphinx-rtd-theme
+linkify-it-py
+myst_parser
+
