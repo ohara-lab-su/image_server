@@ -340,3 +340,43 @@ class ImageStreamDeviceClass:
     def _time_ns():
         # type: () -> int
         return int(time.time() * 1000000000)
+
+CAMERA_ID = 0
+CAPTURE_INTERVAL_SEC = 0.03
+CAMERA_WIDTH = None
+CAMERA_HEIGHT = None
+CAMERA_FPS = None
+WINDOW_NAME = "ImageStreamDeviceClass"
+
+
+def main():
+    """ローカルカメラへ接続し、取得画像をOpenCVウィンドウへ表示する。"""
+    image_stream = ImageStreamDeviceClass(
+        camera_id=CAMERA_ID,
+        interval_sec=CAPTURE_INTERVAL_SEC,
+        width=CAMERA_WIDTH,
+        height=CAMERA_HEIGHT,
+        fps=CAMERA_FPS,
+    )
+
+    if not image_stream.connect():
+        raise RuntimeError(str(image_stream.get_status()))
+
+    try:
+        while True:
+            frame = image_stream.get_latest_frame()
+            if frame is None:
+                time.sleep(0.01)
+                continue
+
+            cv2.imshow(WINDOW_NAME, frame)
+            key = cv2.waitKey(1) & 0xFF
+            if key == 27 or key == ord("q"):
+                break
+    finally:
+        image_stream.disconnect()
+        cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    main()

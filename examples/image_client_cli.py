@@ -1,6 +1,5 @@
-"""gRPC画像サーバー操作CLI。"""
+"""gRPC画像サーバー操作例。"""
 
-import argparse
 import json
 import os
 
@@ -9,43 +8,24 @@ import cv2
 from image_server.server_grpc import ImageStreamClient
 
 
-def build_parser():
-    parser = argparse.ArgumentParser(
-        description="Generic image server CLI"
-    )
-    parser.add_argument("--server-ip", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=50051)
-    parser.add_argument("--timeout", type=float, default=5.0)
-    parser.add_argument("--topic", default="camera.frame")
+SERVER_IP = "127.0.0.1"
+SERVER_PORT = 50051
+TIMEOUT_SEC = 5.0
+TOPIC_NAME = "camera.frame"
 
-    sub = parser.add_subparsers(dest="command")
-    sub.add_parser("status")
-    sub.add_parser("config")
-    sub.add_parser("connect")
-    sub.add_parser("disconnect")
-    sub.add_parser("start")
-    sub.add_parser("stop")
-    sub.add_parser("show")
+COMMAND = "status"
 
-    capture = sub.add_parser("capture")
-    capture.add_argument("output")
+CAPTURE_OUTPUT = "capture.jpg"
+SERVER_SNAPSHOT_PATH = "snapshot.jpg"
 
-    stream = sub.add_parser("stream-config")
-    stream.add_argument("--interval", type=float)
-    stream.add_argument("--jpeg-quality", type=int)
-    stream.add_argument("--topic-name")
+STREAM_INTERVAL_SEC = None
+JPEG_QUALITY = None
+STREAM_TOPIC_NAME = None
 
-    camera = sub.add_parser("camera-config")
-    camera.add_argument("--width", type=int)
-    camera.add_argument("--height", type=int)
-    camera.add_argument("--fps", type=float)
-
-    camera_id = sub.add_parser("camera-id")
-    camera_id.add_argument("value", type=int)
-
-    snapshot = sub.add_parser("server-snapshot")
-    snapshot.add_argument("path")
-    return parser
+CAMERA_WIDTH = None
+CAMERA_HEIGHT = None
+CAMERA_FPS = None
+CAMERA_ID = 0
 
 
 def print_result(value):
@@ -53,36 +33,31 @@ def print_result(value):
 
 
 def main():
-    parser = build_parser()
-    args = parser.parse_args()
-    if args.command is None:
-        parser.error("command is required")
-
     client = ImageStreamClient(
-        args.server_ip,
-        args.port,
-        args.timeout,
+        SERVER_IP,
+        SERVER_PORT,
+        TIMEOUT_SEC,
     )
 
     try:
-        if args.command == "status":
+        if COMMAND == "status":
             print_result(client.get_status())
-        elif args.command == "config":
+        elif COMMAND == "config":
             print_result(client.get_config())
-        elif args.command == "connect":
+        elif COMMAND == "connect":
             print_result(client.connect())
-        elif args.command == "disconnect":
+        elif COMMAND == "disconnect":
             print_result(client.disconnect())
-        elif args.command == "start":
+        elif COMMAND == "start":
             print_result(client.start_stream())
-        elif args.command == "stop":
+        elif COMMAND == "stop":
             print_result(client.stop_stream())
-        elif args.command == "show":
-            client.show_camera_frame_stream(topic=args.topic)
-        elif args.command == "capture":
+        elif COMMAND == "show":
+            client.show_camera_frame_stream(topic=TOPIC_NAME)
+        elif COMMAND == "capture":
             payload = client.capture_once()
             frame = client.decode_payload(payload)
-            output = os.path.abspath(args.output)
+            output = os.path.abspath(CAPTURE_OUTPUT)
             directory = os.path.dirname(output)
             if directory and not os.path.isdir(directory):
                 os.makedirs(directory)
@@ -96,26 +71,28 @@ def main():
                     "frame_id": payload.get("frame_id"),
                 }
             )
-        elif args.command == "stream-config":
+        elif COMMAND == "stream-config":
             print_result(
                 client.set_stream_config(
-                    args.interval,
-                    args.jpeg_quality,
-                    args.topic_name,
+                    STREAM_INTERVAL_SEC,
+                    JPEG_QUALITY,
+                    STREAM_TOPIC_NAME,
                 )
             )
-        elif args.command == "camera-config":
+        elif COMMAND == "camera-config":
             print_result(
                 client.set_camera_config(
-                    args.width,
-                    args.height,
-                    args.fps,
+                    CAMERA_WIDTH,
+                    CAMERA_HEIGHT,
+                    CAMERA_FPS,
                 )
             )
-        elif args.command == "camera-id":
-            print_result(client.set_camera_id(args.value))
-        elif args.command == "server-snapshot":
-            print_result(client.save_snapshot(args.path))
+        elif COMMAND == "camera-id":
+            print_result(client.set_camera_id(CAMERA_ID))
+        elif COMMAND == "server-snapshot":
+            print_result(client.save_snapshot(SERVER_SNAPSHOT_PATH))
+        else:
+            raise ValueError("Unsupported COMMAND: {}".format(COMMAND))
     finally:
         close = getattr(client, "close", None)
         if callable(close):

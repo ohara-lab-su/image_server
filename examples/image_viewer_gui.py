@@ -1,6 +1,5 @@
 """PySide6を使用したgRPC画像ビューアー。"""
 
-import argparse
 import sys
 import threading
 
@@ -19,6 +18,11 @@ from PySide6.QtWidgets import (
 )
 
 from image_server.server_grpc import ImageStreamClient
+
+SERVER_IP = "127.0.0.1"
+SERVER_PORT = 50051
+TOPIC_NAME = "camera.frame"
+TIMEOUT_SEC = 5.0
 
 
 class StreamWorker(QObject):
@@ -102,7 +106,7 @@ class ImageViewerWindow(QMainWindow):
         self._client = ImageStreamClient(
             self._ip.text().strip(),
             self._port.value(),
-            5.0,
+            TIMEOUT_SEC,
         )
         self._worker = StreamWorker(
             self._client,
@@ -175,17 +179,11 @@ class ImageViewerWindow(QMainWindow):
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--server-ip", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=50051)
-    parser.add_argument("--topic", default="camera.frame")
-    args = parser.parse_args()
-
     app = QApplication(sys.argv)
     window = ImageViewerWindow(
-        args.server_ip,
-        args.port,
-        args.topic,
+        SERVER_IP,
+        SERVER_PORT,
+        TOPIC_NAME,
     )
     window.show()
     sys.exit(app.exec())
