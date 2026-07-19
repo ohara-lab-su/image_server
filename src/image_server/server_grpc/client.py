@@ -1,6 +1,6 @@
-from __future__ import annotations
+"""grpc_frame用同期画像クライアント。"""
 
-from typing import Any
+from typing import Any, Dict, Iterator, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -9,63 +9,80 @@ from grpc_frame.grpc_client import SyncGrpcClient
 
 
 class ImageStreamClient(SyncGrpcClient):
-    """grpc_frame 用の画像転送クライアントである。"""
+    """ImageStreamGrpcService用同期クライアント。"""
 
     def __init__(
         self,
-        server_ip: str,
-        server_port: int,
-        timeout_sec: float | None = None,
-        logger: Any | None = None,
-    ) -> None:
-        super().__init__(
-            server_ip=server_ip,
-            server_port=server_port,
-            timeout_sec=timeout_sec,
-            logger=logger,
+        server_ip,
+        server_port,
+        timeout_sec=None,
+        logger=None,
+        max_message_mb=64,
+    ):
+        # type: (str, int, Optional[float], Optional[Any], int) -> None
+        kwargs = {
+            "server_ip": server_ip,
+            "server_port": server_port,
+            "timeout_sec": timeout_sec,
+            "logger": logger,
+        }
+        try:
+            SyncGrpcClient.__init__(
+                self,
+                max_message_mb=max_message_mb,
+                **kwargs
+            )
+        except TypeError:
+            SyncGrpcClient.__init__(self, **kwargs)
+
+    @staticmethod
+    def decode_payload(payload):
+        # type: (Dict[str, Any]) -> Any
+        image_bytes = payload.get("image")
+        if not isinstance(
+            image_bytes,
+            (bytes, bytearray, memoryview),
+        ):
+            raise ValueError(
+                "payload does not contain JPEG bytes."
+            )
+
+        image_array = np.frombuffer(
+            image_bytes,
+            dtype=np.uint8,
         )
+        frame = cv2.imdecode(
+            image_array,
+            cv2.IMREAD_COLOR,
+        )
+        if frame is None:
+            raise ValueError("Failed to decode JPEG payload.")
+        return frame
+
+    def iter_frames(self, topic="camera.frame"):
+        # type: (str) -> Iterator[Tuple[Dict[str, Any], Any]]
+        for payload in self.subscribe(topic=topic):
+            try:
+                frame = self.decode_payload(payload)
+            except ValueError:
+                continue
+            yield payload, frame
 
     def show_camera_frame_stream(
         self,
-        topic: str = "camera.frame",
-        window_name: str = "camera.frame",
-    ) -> None:
-        """画像イベントを受信して OpenCV window に表示する。
-
-        Args:
-            topic: gRPC event topic である。
-            window_name: 表示 window 名である。
-        """
+        topic="camera.frame",
+        window_name="camera.frame",
+    ):
+        # type: (str, str) -> None
         self.start_stream()
-
-        for payload in self.subscribe(topic=topic):
-            image_bytes: bytes = payload["image"]
-            image_array = np.frombuffer(image_bytes, dtype=np.uint8)
-            frame = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-
-            if frame is None:
-                continue
-
-            cv2.imshow(window_name, frame)
-            key: int = cv2.waitKey(1)
-
-            if key == 27:
-                break
-
-        self.stop_stream()
-        cv2.destroyWindow(window_name)
-
-
-def main() -> None:
-    """接続確認用の最小クライアントである。"""
-    client = ImageStreamClient(
-        server_ip="127.0.0.1",
-        server_port=50051,
-    )
-
-    print(client.get_status())
-    client.show_camera_frame_stream()
-
-
-if __name__ == "__main__":
-    main()
+        try:
+            for _payload, frame in self.iter_frames(topic=topic):
+                cv2.imshow(window_name, frame)
+                key = cv2.waitKey(1) & 0xFF
+                if key == 27 or key == ord("q"):
+                    break
+        finally:
+            try:
+                self.stop_stream()
+            finally:
+                cv2.destroyAllWindows()
