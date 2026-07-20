@@ -1,4 +1,5 @@
 # image_server
+view on [github](https://github.com/ohara-lab-su/image_server/) / [ohara-lab-su (doc)](https://ohara-lab-su.github.io/)
 
 画像転送プログラムの基本となる雛形
 
