@@ -47,6 +47,7 @@ jobs:
         run: |
           rm -rf _build api
           mkdir -p api
+          sphinx-apidoc -f -o api ../src
           sphinx-build -b html . _build/html
           touch _build/html/.nojekyll
 
