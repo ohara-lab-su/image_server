@@ -1,5 +1,9 @@
 # image_server
 
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/ohara-lab-su/image_server/blob/main/README.en.md)
+[![ja](https://img.shields.io/badge/lang-ja-yellow.svg)](https://github.com/ohara-lab-su/image_server/blob/main/README.md)
+
+
 image_server は「USBカメラを扱うライブラリ」ではありません。
 
 本ライブラリは **画像転送機能を既存プログラムへ組み込むためのテンプレート** です。
