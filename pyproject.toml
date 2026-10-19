@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "image_server"
+name = "image-server"
 
-version = "0.0.0"
+version = "0.0.1"
 
 description = "image_server (Template)"
 authors = [
@@ -15,6 +15,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
     "xlogger-py",
+    #
     "pyserial",
     "nest_asyncio",
     "pydantic",
