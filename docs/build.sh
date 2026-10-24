@@ -13,23 +13,21 @@ if [[ ! -d "$SRC_DIR/$PKG_NAME" ]]; then
     exit 1
 fi
 
-rm -rf "$SCRIPT_DIR/_build"
-mkdir -p "$SCRIPT_DIR/_build/html"
+if ! cmp -s "$SCRIPT_DIR/index.md" "$SCRIPT_DIR/en/index.md"; then
+    echo "docs/index.md and docs/en/index.md must be identical" >&2
+    exit 1
+fi
 
-for LANG_CODE in en jp; do
-    LANG_DIR="$SCRIPT_DIR/$LANG_CODE"
-    rm -rf "$LANG_DIR/api"
-    mkdir -p "$LANG_DIR/api"
-    sphinx-apidoc -o "$LANG_DIR/api" "$SRC_DIR/$PKG_NAME" -f --module-first
-    sphinx-build -b html "$LANG_DIR" "$SCRIPT_DIR/_build/html/$LANG_CODE"
+rm -rf "$SCRIPT_DIR/_build" "$SCRIPT_DIR/en/api" "$SCRIPT_DIR/ja/api"
+
+for LANG_CODE in en ja; do
+    sphinx-apidoc -o "$SCRIPT_DIR/$LANG_CODE/api" "$SRC_DIR/$PKG_NAME" -f --module-first
+    sphinx-build -b html -c "$SCRIPT_DIR" -D "language=$LANG_CODE" \
+        "$SCRIPT_DIR/$LANG_CODE" "$SCRIPT_DIR/_build/html/$LANG_CODE"
 done
 
-cat > "$SCRIPT_DIR/_build/html/index.html" <<'HTML'
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=./en/">
-<link rel="canonical" href="./en/"><title>image_server documentation</title>
-</head><body><p><a href="./en/">English</a> / <a href="./jp/">日本語</a></p></body></html>
-HTML
+# Publish English documentation at the site root without a redirect.
+sphinx-build -b html -c "$SCRIPT_DIR" -D language=en \
+    "$SCRIPT_DIR/en" "$SCRIPT_DIR/_build/html"
 : > "$SCRIPT_DIR/_build/html/.nojekyll"
-echo "Built: $SCRIPT_DIR/_build/html/{en,jp}/"
+echo "Built English at / and /en/; Japanese at /ja/"
