@@ -1,11 +1,10 @@
 # Changelog
 
-
 ## v0.0.0
 
 ### Added
 
-- 初回リリース
+- Initial release
 - ImageStreamCtrl
 - ImageStreamGrpcService
 - ImageStreamClient
@@ -13,5 +12,5 @@
 - Local Viewer
 - run_image_server
 - make_pyi
-- OpenCV と gRPC を分離したアーキテクチャ
-- カメラSDK差し替えを前提としたテンプレート設計
+- Architecture separating OpenCV and gRPC
+- Template-based design allowing camera SDKs to be replaced

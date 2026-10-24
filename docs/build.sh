@@ -2,36 +2,34 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOCS_DIR="$SCRIPT_DIR"
-ROOT_DIR="$(cd "$DOCS_DIR/.." && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SRC_DIR="$ROOT_DIR/src"
-
-PKG_NAME="image_server"   # パッケージ名を明示
+PKG_NAME="image_server"
 
 export PYTHONPATH="$SRC_DIR:${PYTHONPATH:-}"
 
-echo "Cleaning build..."
-rm -rf "$DOCS_DIR/_build" "$DOCS_DIR/api"
-mkdir -p "$DOCS_DIR/api" "$DOCS_DIR/_static"
+if [[ ! -d "$SRC_DIR/$PKG_NAME" ]]; then
+    echo "Package directory not found: $SRC_DIR/$PKG_NAME" >&2
+    exit 1
+fi
 
-echo "Generating API stubs with sphinx-apidoc..."
-sphinx-apidoc -o "$DOCS_DIR/api" "$SRC_DIR/$PKG_NAME" -f --module-first
+rm -rf "$SCRIPT_DIR/_build"
+mkdir -p "$SCRIPT_DIR/_build/html"
 
-echo "Building HTML..."
-sphinx-build -b html "$DOCS_DIR" "$DOCS_DIR/_build/html"
+for LANG_CODE in en jp; do
+    LANG_DIR="$SCRIPT_DIR/$LANG_CODE"
+    rm -rf "$LANG_DIR/api"
+    mkdir -p "$LANG_DIR/api"
+    sphinx-apidoc -o "$LANG_DIR/api" "$SRC_DIR/$PKG_NAME" -f --module-first
+    sphinx-build -b html "$LANG_DIR" "$SCRIPT_DIR/_build/html/$LANG_CODE"
+done
 
-# GitHub Pages が Jekyll で _static 等を落とすのを防ぐ（デプロイ方法に依らず害なし）
-: > "$DOCS_DIR/.nojekyll"
-: > "$DOCS_DIR/_build/html/.nojekyll"
-
-echo "Creating local redirect index.html..."
-cat > "$DOCS_DIR/index.html" << 'HTML'
+cat > "$SCRIPT_DIR/_build/html/index.html" <<'HTML'
 <!doctype html>
-<meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=./_build/html/">
-<link rel="canonical" href="./_build/html/">
-<title>Redirecting…</title>
-<p>Redirecting to <a href="./_build/html/">./_build/html/</a></p>
+<html lang="en"><head><meta charset="utf-8">
+<meta http-equiv="refresh" content="0; url=./en/">
+<link rel="canonical" href="./en/"><title>image_server documentation</title>
+</head><body><p><a href="./en/">English</a> / <a href="./jp/">日本語</a></p></body></html>
 HTML
-
-echo "Done."
+: > "$SCRIPT_DIR/_build/html/.nojekyll"
+echo "Built: $SCRIPT_DIR/_build/html/{en,jp}/"

@@ -11,51 +11,35 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: true
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
-    runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - name: Configure Pages
         uses: actions/configure-pages@v5
-
-      - name: Install dependencies
+      - name: Install documentation dependencies
         run: |
-          python -m pip install -U pip
+          python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-
-      - name: Build Sphinx
-        working-directory: docs
-        env:
-          LANG: C.UTF-8
-          LC_ALL: C.UTF-8
-        run: |
-          rm -rf _build api
-          mkdir -p api
-          sphinx-apidoc -f -o api ../src
-          sphinx-build -b html . _build/html
-          touch _build/html/.nojekyll
-
-      - name: Upload artifact
+          python -m pip install sphinx myst-parser sphinx-rtd-theme linkify-it-py
+      - name: Build documentation
+        run: bash docs/build.sh
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs/_build/html
-
-      - name: Deploy to GitHub Pages
+      - name: Deploy Pages
         id: deployment
         uses: actions/deploy-pages@v4
