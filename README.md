@@ -3,49 +3,47 @@
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/ohara-lab-su/image_server/blob/main/README.en.md)
 [![ja](https://img.shields.io/badge/lang-ja-yellow.svg)](https://github.com/ohara-lab-su/image_server/blob/main/README.md)
 
+image_server is **not** a library for working with USB cameras.
 
-image_server は「USBカメラを扱うライブラリ」ではありません。
+This library is a **template for integrating image transfer functionality into existing programs**.
+Rather than implementing OpenCV, gRPC, and a viewer from scratch each time, its goal is to enable developers to build an image transfer system quickly by modifying only the image acquisition component.
 
-本ライブラリは **画像転送機能を既存プログラムへ組み込むためのテンプレート** です。
-OpenCV・gRPC・Viewer を毎回実装するのではなく、画像取得部分だけを書き換えることで
-画像転送システムを短時間で構築できることを目的としています。
+## Problems This Library Solves
 
-## このライブラリが解決する問題
+Normally, the following functionality must be implemented for each project:
 
-通常は次のような処理を毎回実装する必要があります。
-
-- カメラ接続
-- フレーム取得
-- JPEG圧縮
-- 通信
+- Camera connection
+- Frame acquisition
+- JPEG compression
+- Communication
 - Viewer
-- 接続管理
-- スレッド管理
+- Connection management
+- Thread management
 
-image_server はこれらを共通化し、利用者は **画像取得部だけ** を実装します。
+image_server provides these functions as common components, so users only need to implement **the image acquisition component**.
 
-## レイヤ構造
+## Layered Architecture
 
-Application
-↓
-ImageStreamGrpcService
-↓
-ImageStreamCtrl
-↓
+Application  
+↓  
+ImageStreamGrpcService  
+↓  
+ImageStreamCtrl  
+↓  
 Camera SDK
 
-ImageStreamCtrl は Camera SDK を抽象化する層です。
-ImageStreamGrpcService は画像配信だけを担当します。
+ImageStreamCtrl is the layer that abstracts the Camera SDK.
+ImageStreamGrpcService is responsible solely for image streaming.
 
-## 開発フロー
+## Development Workflow
 
-1. ImageStreamCtrl を OpenCV で動かす
-2. SDK に置き換える
-3. run_image_server.py を起動
-4. Viewer で確認
-5. DeviceProxy や AI システムへ組み込む
+1. Run ImageStreamCtrl with OpenCV.
+2. Replace OpenCV with the target SDK.
+3. Start `run_image_server.py`.
+4. Verify operation with the viewer.
+5. Integrate it with DeviceProxy or an AI system.
 
-## 想定用途
+## Intended Use Cases
 
 - USB Camera
 - Basler
@@ -53,6 +51,6 @@ ImageStreamGrpcService は画像配信だけを担当します。
 - HikVision
 - GigE Vision
 - ORiN Camera
-- AI 推論サーバ
-- 外観検査
-- ロボットビジョン
+- AI inference servers
+- Visual inspection
+- Robot vision
