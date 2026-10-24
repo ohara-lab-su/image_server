@@ -1,6 +1,6 @@
 # image_server
 
-[![English](https://img.shields.io/badge/lang-en-red.svg)](../en/) [![日本語](https://img.shields.io/badge/lang-ja-blue.svg)](../jp/)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://ohara-lab-su.github.io/image_server/) [![ja](https://img.shields.io/badge/lang-ja-red.svg)](https://ohara-lab-su.github.io/image_server/ja/)
 
 [GitHub](https://github.com/ohara-lab-su/image_server/) / [ohara-lab-su ドキュメント](https://ohara-lab-su.github.io/)
 
