@@ -2,7 +2,7 @@
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://ohara-lab-su.github.io/image_server/) [![ja](https://img.shields.io/badge/lang-ja-red.svg)](https://ohara-lab-su.github.io/image_server/ja/)
 
-[GitHub](https://github.com/ohara-lab-su/image_server/) / [Ohara Lab documentation](https://ohara-lab-su.github.io/)
+[GitHub repository](https://github.com/ohara-lab-su/image_server/) · [Project documentation](https://ohara-lab-su.github.io/)
 
 A reusable starting point for image acquisition and gRPC-based image streaming applications. The local camera controller and the network delivery service are separate components.
 

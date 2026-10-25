@@ -2,7 +2,7 @@
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://ohara-lab-su.github.io/image_server/) [![ja](https://img.shields.io/badge/lang-ja-red.svg)](https://ohara-lab-su.github.io/image_server/ja/)
 
-[GitHub](https://github.com/ohara-lab-su/image_server/) / [ohara-lab-su ドキュメント](https://ohara-lab-su.github.io/)
+[GitHub repository](https://github.com/ohara-lab-su/image_server/) · [Project documentation](https://ohara-lab-su.github.io/)
 
 画像取得と gRPC による画像配信を行うアプリケーションのための基本的な雛形です。ローカルのカメラ制御とネットワーク配信を独立した責務として設計しています。
 
