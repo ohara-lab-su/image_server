@@ -1,8 +1,12 @@
 # image_server
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://ohara-lab-su.github.io/image_server/) [![ja](https://img.shields.io/badge/lang-ja-red.svg)](https://ohara-lab-su.github.io/image_server/ja/)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://ohara-lab-su.github.io/image_server/)
+[![ja](https://img.shields.io/badge/lang-ja-red.svg)](https://ohara-lab-su.github.io/image_server/ja/)
 
-[GitHub repository](https://github.com/ohara-lab-su/image_server/) · [Project documentation](https://ohara-lab-su.github.io/)
+[![GitHub](https://img.shields.io/badge/GitHub-ohara--lab--su%2Fimage_server-181717?logo=github)](https://github.com/ohara-lab-su/image_server/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Documentation-222222?logo=githubpages&logoColor=white)](https://ohara-lab-su.github.io/image_server/en/)
+[![Ohara Lab](https://img.shields.io/badge/Ohara%20Lab-Home-4B5563?logo=homeassistant&logoColor=white)](https://ohara-lab-su.github.io/index.en.html)
+
 
 A reusable starting point for image acquisition and gRPC-based image streaming applications. The local camera controller and the network delivery service are separate components.
 
