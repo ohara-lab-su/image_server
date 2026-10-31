@@ -7,7 +7,7 @@ name = "image-server-kit"
 
 version = "0.0.3"
 
-description = "image_server (Template)"
+description = "Reusable Python template for camera-independent image acquisition and gRPC streaming, with server and viewer components."
 authors = [
   { name="Kengo NAKADA", email="kengo.nakada@email.com" }
 ]
@@ -28,6 +28,12 @@ dependencies = [
     "sphinxcontrib-napoleon",
     "linkify-it-py"
 ]
+
+[project.urls]
+Homepage = "https://ohara-lab-su.github.io/image_server/"
+Documentation = "https://ohara-lab-su.github.io/image_server/"
+Repository = "https://github.com/ohara-lab-su/image_server"
+Issues = "https://github.com/ohara-lab-su/image_server/issues"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
